@@ -40,7 +40,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "public_subnet" {
   count             = length(var.private_cidr_blocks)
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_cidr_blocks[count.index]
+  cidr_block        = var.public_cidr_blocks[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
   tags = merge(
     local.default_tags, {
@@ -52,7 +52,7 @@ resource "aws_subnet" "public_subnet" {
 # Add provisioning of the private subnets in the custom VPC
 resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_cidr_blocks
+  cidr_block        = var.private_cidr_blocks[0]
   availability_zone = data.aws_availability_zones.available.names[0]
   tags = merge(
     var.default_tags, {
