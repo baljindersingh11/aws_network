@@ -43,5 +43,9 @@ variable "public_subnet_cidrs" {
 
 variable "private_subnet_cidr" {
   description = "CIDR block for the private subnet"
-  type        = string
+  type        = list(string)
+}
+
+variable "private_cidr_blocks" {
+  type = list(string)
 }
