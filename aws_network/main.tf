@@ -82,7 +82,7 @@ resource "aws_route_table_association" "public_routes" {
 resource "aws_subnet" "private_subnet" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.private_subnet_cidr
-  availability_zone       = var.az
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false
 
   tags = {
@@ -90,20 +90,20 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
-resource "aws_eip" "nat" {
+resource "aws_eip" "nat-eip" {
   vpc = true        
   tags = {
-    Name = "Nat EIP"
+    Name = "${var.prefix}-natgw"
   }
 }
 
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public_subnet.id
+resource "aws_nat_gateway" "nat-gw" {
+  allocation_id = aws_eip.nat-eip.id
+  subnet_id     = aws_subnet.public_subnet[0].id
   tags = {
     Name = "NAT Gateway"
   }
-  depends_on    = [aws_internet_gateway.gw]
+  depends_on    = [aws_internet_gateway.igw]
 }
 
 resource "aws_route_table" "private" {
