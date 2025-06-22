@@ -105,7 +105,7 @@ resource "aws_nat_gateway" "nat-gw" {
   }
   depends_on    = [aws_internet_gateway.igw]
 }
-
+/*
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
@@ -116,6 +116,15 @@ resource "aws_route_table" "private" {
 
   tags = {
     Name = "Private Route Table"
+  }
+}
+*/
+
+resource "aws_route_table" "private_route_table" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "${var.prefix}-route-private-route_table",
+    Tier = "Private"
   }
 }
 
