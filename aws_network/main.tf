@@ -49,6 +49,19 @@ resource "aws_subnet" "public_subnet" {
   )
 }
 
+# Add provisioning of the private subnets in the custom VPC
+resource "aws_subnet" "private_subnet" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_cidr_block
+  availability_zone = data.aws_availability_zones.available.names[0]
+  tags = merge(
+    var.default_tags, {
+      Name = "${var.prefix}-private-subnet"
+      Tier = "Private"
+    }
+  )
+}
+
 # Create Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
@@ -71,11 +84,17 @@ resource "aws_route_table" "public_subnets" {
     Name = "${var.prefix}-route-public-subnets"
   }
 }
+resource "aws_route" "private_route" {
+  route_table_id         = aws_route_table.private_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_nat_gateway.nat-gw.id
+}
+
 
 # Associate subnets with the custom route table
-resource "aws_route_table_association" "public_routes" {
+resource "aws_route_table_association" "public_route_table_association" {
   count          = length(aws_subnet.public_subnet[*].id)
-  route_table_id = aws_route_table.public_subnets.id
+  route_table_id = aws_route_table.public_route_table.id
   subnet_id      = aws_subnet.public_subnet[count.index].id
 }
 
