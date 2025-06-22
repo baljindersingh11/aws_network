@@ -46,6 +46,6 @@ variable "private_subnet_cidr" {
   type        = list(string)
 }
 
-variable "private_cidr_blocks" {
+variable "private_cidr_block" {
   type = list(string)
 }
