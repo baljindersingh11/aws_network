@@ -188,7 +188,8 @@ resource "aws_nat_gateway" "nat-gw" {
 
 # Create elastic IP for NAT GW
 resource "aws_eip" "nat-eip" {
-  vpc   = true
+#  vpc   = true
+  domain = "vpc"
   tags = {
     Name = "${var.prefix}-natgw"
   }
